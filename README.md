@@ -1,5 +1,12 @@
 ## webpack-environment-suffix-plugin
 
+- [Overview](#overview)
+- [Installation](#installation)
+- [Configuration](#configure-webpack)
+- [Ionic](#ionic--380)
+    - [>=3.8.0](#ionic--380)
+    - [< 3.8.0](#ionic--380-1)
+
 ### Overview
 Plugin allows to use different versions of config files for the different environments. You can create several versions of same file:
 ```
