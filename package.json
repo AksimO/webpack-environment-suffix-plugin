@@ -1,6 +1,6 @@
 {
   "name": "webpack-environment-suffix-plugin",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Webpack plugin to setup environment dependent build.",
   "main": "src/webpack-environment-suffix-plugin.js",
   "keywords": [
