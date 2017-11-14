@@ -68,23 +68,30 @@ This package might be configured to be used with `ionic`.
 ```js
 ├── webpack.config.js
 
-const originalWebpackConfig = require('@ionic/app-scripts/config/webpack.config');
+const webpackConfig = require('@ionic/app-scripts/config/webpack.config');
 const EnvironmentSuffixPlugin = require('webpack-environment-suffix-plugin');
 
+const ionicEnv = ['prod', 'dev'];
 
-module.exports = env => {
-    const plugins = originalWebpackConfig[env].plugins || [];
+const addPluginToWebpackConfig = (config, env) => {
+  console.log(env);
+  const plugins = config[env].plugins || [];
 
-    originalWebpackConfig[env].plugins = [
-      ...plugins,
-      new EnvironmentPlugin({
-        ext: 'ts',
-        suffix: /*process.env.NODE_ENV || 'dev'*/ env
-      })
-    ];
+  config[env].plugins = [
+    ...plugins,
+    new EnvironmentSuffixPlugin({
+      ext: 'ts',
+      suffix: process.env.NODE_ENV || 'dev'
+    })
+  ];
 
-    return originalWebpackConfig;
-}
+  return config;
+};
+
+module.exports = props => {
+  return ionicEnv.reduce(addPluginToWebpackConfig, webpackConfig);
+};
+
 ```
 
 - Add `"ionic_webpack": <new webpack.config.js path>"` to a `config` section of your `package.json`.
@@ -111,7 +118,7 @@ module.exports = () => {
 
     originalWebpackConfig.plugins = [
       ...plugins,
-      new EnvironmentPlugin({
+      new EnvironmentSuffixPlugin({
         ext: 'ts',
         suffix: process.env.NODE_ENV || 'dev'
       })
