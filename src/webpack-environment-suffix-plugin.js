@@ -31,14 +31,14 @@ class EnvironmentSuffixPlugin {
     suffix = process.env.NODE_ENV,
     include = [new RegExp(`.+${ext}$`)],
     exclude = [/node_modules/],
-    output = '[name].[suffix]'
+    pattern = '[name].[suffix]'
   }) {
     this.ext = ext;
     this.suffix = suffix;
     this.include = prop2func(include, () => regexps2function(include));
     this.exclude = prop2func(exclude, () => regexps2function(exclude));
-    this.output = prop2func(output, () =>
-      format2function(output, this.suffix, this.ext)
+    this.pattern = prop2func(pattern, () =>
+      format2function(pattern, this.suffix, this.ext)
     );
   }
 
@@ -51,7 +51,7 @@ class EnvironmentSuffixPlugin {
     }
 
     return new Promise((resolve, reject) => {
-      const outputModuleName = this.output(moduleName);
+      const outputModuleName = this.pattern(moduleName);
 
       //read file to check if it's <env> dependent version exist
       fs.fileSystem.readFile(
@@ -59,7 +59,7 @@ class EnvironmentSuffixPlugin {
         (error, response) => (error ? reject() : resolve(outputModuleName))
       );
     }).then(newModule => {
-      console.log(`Resolve ${request} => ${newModule}`);
+      console.log(`${request} => ${newModule}`);
       return newModule;
     });
   }
@@ -69,7 +69,9 @@ class EnvironmentSuffixPlugin {
 */
   apply(compiler) {
     compiler.plugin('normal-module-factory', nmf => {
-      console.log(`Resolve suffix ${this.suffix} for files *.${this.ext}`);
+      console.log(
+        `Resolve suffix ${this.suffix} for file extensions ${this.ext}`
+      );
       const fs = nmf.resolvers.normal;
       nmf.plugin('before-resolve', (r, c) =>
         this.checkRequest(fs, r).then(

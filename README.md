@@ -1,9 +1,10 @@
 ## webpack-environment-suffix-plugin
 
-- [Overview](#overview)
-- [Installation](#installation)
-- [Configuration](#configure-webpack)
-- [Ionic](#ionic--380)
+- [overview](#overview)
+- [installation](#installation)
+- [webpack configuration](#configure-webpack)
+- [options](#options)
+- [ionic](#ionic--380)
     - [>=3.8.0](#ionic--380)
     - [< 3.8.0](#ionic--380-1)
 
@@ -61,6 +62,37 @@ const config = {
 }
 ```
 
+## Options
+- `suffix` -- defines file suffix that should to be used by resolver. For instance `"dev"`, `"prod"`, `"qa"` or ony other you want to use. (*Default*: `"dev"`).
+- `ext` -- file extension. (*Default*: `"js"`; For typescript need to set to `"ts"`).
+- `include` -- Tests files against array of regexps. By default value is `[/.*\.<your ext>$/]`. 
+*Note:* To improve plugin performance set `include` values as precise as possible.
+For example:
+```js 
+new EnvironmentSuffixPlugin ({ 
+  "include":[/src\/config\/*.js/, /src\/environment\/*.js/]
+})
+``` 
+- `exclude` -- Array of patterns to exclude. (*Default:* `[/node_modules/]).
+- `pattern` -- Pattern that is resolver is looking for. (*Default* `[name].[suffix]`). 
+Example: 
+```js
+  //Add resolve js files with suffix defined in process.env.NODE_ENV
+  new EnvironmentSuffixPlugin(
+    suffix: process.env.NODE_ENV
+  )
+
+  //add resolve for typescript for with custom pattern
+  new EnvironmentSuffixPlugin(
+    ext: 'ts'
+    suffix: process.env.NODE_ENV,
+    include:[/src\/config/, /src\/environment/],
+    // search fo custom pattern like: environment-dev.ts
+    pattern: '[name]-[suffix]'
+  )
+```
+
+
 ## Ionic >= 3.8.0
 This package might be configured to be used with `ionic`.
 
@@ -74,7 +106,6 @@ const EnvironmentSuffixPlugin = require('webpack-environment-suffix-plugin');
 const ionicEnv = ['prod', 'dev'];
 
 const addPluginToWebpackConfig = (config, env) => {
-  console.log(env);
   const plugins = config[env].plugins || [];
 
   config[env].plugins = [
@@ -88,7 +119,7 @@ const addPluginToWebpackConfig = (config, env) => {
   return config;
 };
 
-module.exports = props => {
+module.exports = () => {
   return ionicEnv.reduce(addPluginToWebpackConfig, webpackConfig);
 };
 
