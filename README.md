@@ -73,7 +73,7 @@ new EnvironmentSuffixPlugin ({
   "include":[/src\/config\/*.js/, /src\/environment\/*.js/]
 })
 ``` 
-- `exclude` -- Array of patterns to exclude. (*Default:* `[/node_modules/]).
+- `exclude` -- Array of patterns to exclude. (*Default:* `[/node_modules/]`).
 - `pattern` -- Pattern that is resolver is looking for. (*Default* `[name].[suffix]`). 
 Example: 
 ```js
