@@ -158,3 +158,10 @@ module.exports = () => {
     return originalWebpackConfig;
 }
 ```
+
+### Thanks to
+[blueharvest](http://blueharvest.io)
+
+### License
+[MIT](http://opensource.org/licenses/MIT)
+
