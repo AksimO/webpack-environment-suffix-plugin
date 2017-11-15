@@ -159,7 +159,7 @@ module.exports = () => {
 }
 ```
 
-### Thanks to
+### Need to mention
 [blueharvest](http://blueharvest.io)
 
 ### License
