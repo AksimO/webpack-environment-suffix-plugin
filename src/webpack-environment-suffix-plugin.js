@@ -75,7 +75,7 @@ class EnvironmentSuffixPlugin {
       const fs = nmf.resolvers.normal;
       nmf.plugin('before-resolve', (r, c) =>
         this.checkRequest(fs, r).then(
-          newModule => /*  */ c(null, { ...r, request: newModule }),
+          newModule => c(null, Object.assign({}, r, { request: newModule })),
           () => /* proceed with regular flow */ c(null, r)
         )
       );
