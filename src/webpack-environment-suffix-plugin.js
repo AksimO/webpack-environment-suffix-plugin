@@ -7,10 +7,10 @@ const regexps2function = regexps => path =>
   regexps.length && regexps.some(regexp => regexp.test(path));
 
 /**
-* Returns function that is used by resolver to search env dependent files 
-* @param {string} outputFormat 
-* @param {string} suffix 
-*/
+ * Returns function that is used by resolver to search env dependent files
+ * @param {string} outputFormat
+ * @param {string} suffix
+ */
 const format2function = (outputFormat, suffix) => {
   const fileRegexp = /(.+)[\\/]([^\\/]+)$/;
   return requestName => {
@@ -40,17 +40,31 @@ class EnvironmentSuffixPlugin {
     this.pattern = prop2func(pattern, () =>
       format2function(pattern, this.suffix, this.ext)
     );
+
+    this.cache = new Map();
   }
 
-  checkRequest(fs, { request, context }) {
+  getFileName(fs, { context, request }) {
     const moduleName = fs.join(context, request);
-    const file = `${moduleName}.${this.ext}`;
+    return `${moduleName}.${this.ext}`;
+  }
 
+  checkCacheRequest(fs, request) {
+    const file = this.getFileName(fs, request);
+
+    if (!this.cache.has(file)) {
+      this.cache.set(file, this.checkRequest(fs, file, request));
+    }
+    return this.cache.get(file);
+  }
+
+  checkRequest(fs, file, { request, context }) {
     if (!this.include(file) || this.exclude(file)) {
       return Promise.reject();
     }
 
     return new Promise((resolve, reject) => {
+      const moduleName = fs.join(context, request);
       const outputModuleName = this.pattern(moduleName);
 
       //read file to check if it's <env> dependent version exist
@@ -65,8 +79,8 @@ class EnvironmentSuffixPlugin {
   }
 
   /**
-* This method should be defined in order to work as webpack plugin
-*/
+   * This method should be defined in order to work as webpack plugin
+   */
   apply(compiler) {
     compiler.plugin('normal-module-factory', nmf => {
       console.log(
@@ -74,7 +88,7 @@ class EnvironmentSuffixPlugin {
       );
       const fs = nmf.resolvers.normal;
       nmf.plugin('before-resolve', (r, c) =>
-        this.checkRequest(fs, r).then(
+        this.checkCacheRequest(fs, r).then(
           newModule => c(null, Object.assign({}, r, { request: newModule })),
           () => /* proceed with regular flow */ c(null, r)
         )
